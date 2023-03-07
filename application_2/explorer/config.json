@@ -2,7 +2,7 @@
 	"network-configs": {
 		"network": {
 			"name": "Test Network",
-			"profile": "./connection-profile/network.json"
+			"profile": "./connection-profile/test-network.json"
 		}
 	},
 	"license": "Apache-2.0"

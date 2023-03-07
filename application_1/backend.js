@@ -16,7 +16,7 @@ const { Gateway, Wallets } = require('fabric-network');
 const fs = require('fs');
 const path = require('path');
 
-const ccpPath = path.resolve(__dirname, '..', '..', 'network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
+const ccpPath = path.resolve(__dirname, '..', 'network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
 const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 
 app.get('/api/queryallcars', async function (req, res) {
@@ -86,9 +86,9 @@ app.post('/api/addcar/', async function (req, res) {
     await gateway.connect(ccp, { wallet, identity: 'appUser', discovery: { enabled: true, asLocalhost: true } });
     const network = await gateway.getNetwork('mychannel');
     const contract = network.getContract('fabcar');
-    await contract.submitTransaction('createCar', req.body.carid, req.body.make, req.body.model, req.body.color, req.body.owner);
+    let result = await contract.submitTransaction('createCar', req.body.carid, req.body.make, req.body.model, req.body.color, req.body.owner);
     console.log('Transaction has been submitted');
-    res.status(200).json({ response: 'Transaction has been submitted' + result });
+    return res.status(200).json({ response: 'Transaction has been submitted' + result });
   } catch (error) {
     console.error(`Failed to submit transaction: ${error}`);
     process.exit(1);
