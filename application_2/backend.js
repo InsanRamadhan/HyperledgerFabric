@@ -16,7 +16,7 @@ const { Gateway, Wallets } = require('fabric-network');
 const fs = require('fs');
 const path = require('path');
 
-const ccpPath = path.resolve(__dirname, '..','network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
+const ccpPath = path.resolve(__dirname, '..','network', 'organizations', 'peerOrganizations', 'org2.example.com', 'connection-org2.json');
 const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 
 app.get('/api/queryallcars', async function (req, res) {
@@ -24,14 +24,14 @@ app.get('/api/queryallcars', async function (req, res) {
     const walletPath = path.join(process.cwd(), 'wallet');
     const wallet = await Wallets.newFileSystemWallet(walletPath);
     console.log(`Wallet path: ${walletPath}`);
-    const identity = await wallet.get('appUser');
+    const identity = await wallet.get('appUser2');
     if (!identity) {
-      console.log('An identity for the user "appUser" does not exist in the wallet');
+      console.log('An identity for the user "appUser2" does not exist in the wallet');
       console.log('Run the registerUser.js application before retrying');
       return;
     }
     const gateway = new Gateway();
-    await gateway.connect(ccp, { wallet, identity: 'appUser', discovery: { enabled: true, asLocalhost: true } });
+    await gateway.connect(ccp, { wallet, identity: 'appUser2', discovery: { enabled: true, asLocalhost: true } });
     const network = await gateway.getNetwork('mychannel');
     const contract = network.getContract('fabcar');
     const result = await contract.evaluateTransaction('queryAllCars');
@@ -50,14 +50,14 @@ app.get('/api/query/:car_index', async function (req, res) {
         const walletPath = path.join(process.cwd(), 'wallet');
         const wallet = await Wallets.newFileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
-        const userExists = await wallet.exists('appUser');
+        const userExists = await wallet.exists('appUser2');
         if (!userExists) {
-            console.log('An identity for the user "appUser" does not exist in the wallet');
+            console.log('An identity for the user "appUser2" does not exist in the wallet');
             console.log('Run the registerUser.js application before retrying');
             return;
         }
         const gateway = new Gateway();
-        await gateway.connect(ccp, { wallet, identity: 'appUser', discovery: { enabled: true, asLocalhost: true } });
+        await gateway.connect(ccp, { wallet, identity: 'appUser2', discovery: { enabled: true, asLocalhost: true } });
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('fabcar');
         const result = await contract.evaluateTransaction('queryCar', req.params.car_index);
@@ -76,17 +76,17 @@ app.post('/api/addcar/', async function (req, res) {
     const walletPath = path.join(process.cwd(), 'wallet');
     const wallet = await Wallets.newFileSystemWallet(walletPath);
     console.log(`Wallet path: ${walletPath}`);
-    const userExists = await wallet.get('appUser');
+    const userExists = await wallet.get('appUser2');
     if (!userExists) {
-      console.log('An identity for the user "appUser" does not exist in the wallet');
+      console.log('An identity for the user "appUser2" does not exist in the wallet');
       console.log('Run the registerUser.js application before retrying');
       return;
     }
     const gateway = new Gateway();
-    await gateway.connect(ccp, { wallet, identity: 'appUser', discovery: { enabled: true, asLocalhost: true } });
+    await gateway.connect(ccp, { wallet, identity: 'appUser2', discovery: { enabled: true, asLocalhost: true } });
     const network = await gateway.getNetwork('mychannel');
     const contract = network.getContract('fabcar');
-    await contract.submitTransaction('createCar', req.body.carid, req.body.make, req.body.model, req.body.color, req.body.owner);
+    let result = await contract.submitTransaction('createCar', req.body.carid, req.body.make, req.body.model, req.body.color, req.body.owner);
     console.log('Transaction has been submitted');
     res.status(200).json({ response: 'Transaction has been submitted' + result });
   } catch (error) {
@@ -100,14 +100,14 @@ app.post('/api/changeowner/', async function (req, res) {
         const walletPath = path.join(process.cwd(), 'wallet');
         const wallet = await Wallets.newFileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
-        const userExists = await wallet.exists('appUser');
+        const userExists = await wallet.exists('appUser2');
         if (!userExists) {
-            console.log('An identity for the user "appUser" does not exist in the wallet');
+            console.log('An identity for the user "appUser2" does not exist in the wallet');
             console.log('Run the registerUser.js application before retrying');
             return;
         }
         const gateway = new Gateway();
-        await gateway.connect(ccp, { wallet, identity: 'appUser', discovery: { enabled: true, asLocalhost: true } });
+        await gateway.connect(ccp, { wallet, identity: 'appUser2', discovery: { enabled: true, asLocalhost: true } });
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('fabcar');
         await contract.submitTransaction('changeCarOwner', req.body.carid, req.body.newowner);
@@ -118,4 +118,4 @@ app.post('/api/changeowner/', async function (req, res) {
         process.exit(1);
     }
 })
-app.listen(9003);
+app.listen(9004);
